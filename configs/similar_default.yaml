@@ -1,0 +1,44 @@
+task: 'similar'
+device: 'cuda'
+model:
+  name: 'siamese'
+
+data:
+  name: 'similar_data'
+  batch_size: 32
+  channels: 3
+  img_sz: [256,256]
+  label_type: 'int'
+  num_workers: 0
+  data_size: 1000
+  data_dir: '/home/unitx/CJM/deeplearning/data/256_ObjectCategories'
+
+optimizer:
+  name: 'SGD'
+  lr: 0.01
+  momentum: 0.9
+  scheduler:
+    name: 'StepLR'
+    step_size: 10
+    gamma: 0.1
+
+loss:
+  name: 'BCELoss'
+
+trainer:
+  epoch: 1000
+  save_freq: 10
+  checkpoint_path: './checkpoint'
+
+log:
+  log_dir: '/home/unitx/CJM/DeepModular/logs'
+
+evaluator:
+  confidence:
+    'cls_validate'
+  performance:
+    [
+      'cls_accuracy',
+#      'Recall',
+#      'F1'
+    ]
