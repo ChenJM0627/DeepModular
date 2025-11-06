@@ -1,0 +1,42 @@
+task: 'cls'
+device: 'cuda'
+model:
+  name: 'resnet34'
+
+data:
+  name: 'cls_data'
+  batch_size: 2
+  channels: 3
+  label_type: 'int'
+  num_workers: 0
+  data_dir: '/home/unitx/CJM/DeepModular/data/PCBA'
+
+optimizer:
+  name: 'SGD'
+  lr: 0.001
+  momentum: 0.9
+  scheduler:
+    name: 'CosineAnnealingLR'
+    T_0: 10
+
+loss:
+  name: 'CELoss'
+
+trainer:
+  epoch: 1000
+  save_freq: 50
+  checkpoint_path: '/home/unitx/CJM/DeepModular/runs/checkpoint'
+  save_for_production: true
+
+log:
+  log_dir: '/home/unitx/CJM/DeepModular/logs'
+
+evaluator:
+  confidence:
+    'cls_validate'
+  performance:
+    [
+      'cls_accuracy',
+#      'Recall',
+#      'F1'
+    ]

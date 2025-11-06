@@ -9,6 +9,8 @@ class DataHandler:
             name = config['data']['name']
         elif task_name.lower() == 'similar':
             name = config['data']['name']
+        elif task_name.lower() == 'obj_detect':
+            name = config['data']['name']
         else:
             raise NotImplementedError(f'{task_name} not implemented')
         return DATASET_REGISTRY.get(name)

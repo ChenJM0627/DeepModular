@@ -1,16 +1,10 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-"""Transformer modules."""
-
-from __future__ import annotations
-
 import math
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.init import constant_, xavier_uniform_
-
-from ultralytics.utils.torch_utils import TORCH_1_11
+from utils.checks import *
 
 from .conv import Conv
 from .utils import _get_clones, inverse_sigmoid, multi_scale_deformable_attn_pytorch
@@ -30,25 +24,6 @@ __all__ = (
 
 
 class TransformerEncoderLayer(nn.Module):
-    """
-    A single layer of the transformer encoder.
-
-    This class implements a standard transformer encoder layer with multi-head attention and feedforward network,
-    supporting both pre-normalization and post-normalization configurations.
-
-    Attributes:
-        ma (nn.MultiheadAttention): Multi-head attention module.
-        fc1 (nn.Linear): First linear layer in the feedforward network.
-        fc2 (nn.Linear): Second linear layer in the feedforward network.
-        norm1 (nn.LayerNorm): Layer normalization after attention.
-        norm2 (nn.LayerNorm): Layer normalization after feedforward network.
-        dropout (nn.Dropout): Dropout layer for the feedforward network.
-        dropout1 (nn.Dropout): Dropout layer after attention.
-        dropout2 (nn.Dropout): Dropout layer after feedforward network.
-        act (nn.Module): Activation function.
-        normalize_before (bool): Whether to apply normalization before attention and feedforward.
-    """
-
     def __init__(
         self,
         c1: int,
@@ -70,9 +45,8 @@ class TransformerEncoderLayer(nn.Module):
             normalize_before (bool): Whether to apply normalization before attention and feedforward.
         """
         super().__init__()
-        from ...utils.torch_utils import TORCH_1_9
 
-        if not TORCH_1_9:
+        if not check_version('torch','1.9.0'):
             raise ModuleNotFoundError(
                 "TransformerEncoderLayer() requires torch>=1.9 to use nn.MultiheadAttention(batch_first=True)."
             )
@@ -238,7 +212,7 @@ class AIFI(TransformerEncoderLayer):
         assert embed_dim % 4 == 0, "Embed dimension must be divisible by 4 for 2D sin-cos position embedding"
         grid_w = torch.arange(w, dtype=torch.float32)
         grid_h = torch.arange(h, dtype=torch.float32)
-        grid_w, grid_h = torch.meshgrid(grid_w, grid_h, indexing="ij") if TORCH_1_11 else torch.meshgrid(grid_w, grid_h)
+        grid_w, grid_h = torch.meshgrid(grid_w, grid_h)
         pos_dim = embed_dim // 4
         omega = torch.arange(pos_dim, dtype=torch.float32) / pos_dim
         omega = 1.0 / (temperature**omega)

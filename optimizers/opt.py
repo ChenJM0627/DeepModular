@@ -17,3 +17,7 @@ class StepLR(optim.lr_scheduler.StepLR):
     def __init__(self,optimizer,params:dict):
         super(StepLR, self).__init__(optimizer,step_size=int(params['step_size']),gamma=float(params['gamma']))
 
+@register_scheduler('CosineAnnealingLR')
+class CosineAnnealingLR(optim.lr_scheduler.CosineAnnealingWarmRestarts):
+    def __init__(self,optimizer,params:dict):
+        super(CosineAnnealingLR, self).__init__(optimizer,T_0=params['T_0'])

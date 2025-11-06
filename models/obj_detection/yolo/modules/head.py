@@ -1,19 +1,10 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-"""Model head modules."""
-
-from __future__ import annotations
-
 import copy
-import math
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.nn.init import constant_, xavier_uniform_
 
-from ultralytics.utils import NOT_MACOS14
-from ultralytics.utils.tal import dist2bbox, dist2rbox, make_anchors
-from ultralytics.utils.torch_utils import TORCH_1_11, fuse_conv_and_bn, smart_inference_mode
+from utils.torch_utils import *
 
 from .block import DFL, SAVPE, BNContrastiveHead, ContrastiveHead, Proto, Residual, SwiGLUFFN
 from .conv import Conv, DWConv
@@ -411,10 +402,7 @@ class Pose(Detect):
         else:
             y = kpts.clone()
             if ndim == 3:
-                if NOT_MACOS14:
-                    y[:, 2::ndim].sigmoid_()
-                else:  # Apple macOS14 MPS bug https://github.com/ultralytics/ultralytics/pull/21878
-                    y[:, 2::ndim] = y[:, 2::ndim].sigmoid()
+                y[:, 2::ndim].sigmoid_()
             y[:, 0::ndim] = (y[:, 0::ndim] * 2.0 + (self.anchors[0] - 0.5)) * self.strides
             y[:, 1::ndim] = (y[:, 1::ndim] * 2.0 + (self.anchors[1] - 0.5)) * self.strides
             return y
@@ -664,7 +652,6 @@ class YOLOEDetect(Detect):
         self.savpe = SAVPE(ch, c3, embed)
         self.embed = embed
 
-    @smart_inference_mode()
     def fuse(self, txt_feats: torch.Tensor):
         """Fuse text features with model weights for efficient inference."""
         if self.is_fused:
@@ -993,7 +980,6 @@ class RTDETRDecoder(nn.Module):
                 metadata. During inference, returns a tensor of shape (bs, 300, 4+nc) containing bounding boxes and
                 class scores.
         """
-        from ultralytics.models.utils.ops import get_cdn_group
 
         # Input projection and embedding
         feats, shapes = self._get_encoder_input(x)
@@ -1056,7 +1042,7 @@ class RTDETRDecoder(nn.Module):
         for i, (h, w) in enumerate(shapes):
             sy = torch.arange(end=h, dtype=dtype, device=device)
             sx = torch.arange(end=w, dtype=dtype, device=device)
-            grid_y, grid_x = torch.meshgrid(sy, sx, indexing="ij") if TORCH_1_11 else torch.meshgrid(sy, sx)
+            grid_y, grid_x = torch.meshgrid(sy, sx)
             grid_xy = torch.stack([grid_x, grid_y], -1)  # (h, w, 2)
 
             valid_WH = torch.tensor([w, h], dtype=dtype, device=device)

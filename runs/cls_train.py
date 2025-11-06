@@ -4,7 +4,7 @@ import argparse
 
 def cls_train():
     parser = argparse.ArgumentParser(description='DeepModular Training')
-    parser.add_argument('--config_path', type=str, default=r'/home/unitx/CJM/DeepModular/configs/cls_default.yaml',required=False,help='Path to configuration file')
+    parser.add_argument('--config_path', type=str, default=r'/home/unitx/CJM/DeepModular/configs/cls_PCBA.yaml',required=False,help='Path to configuration file')
     args = parser.parse_args()
     config = parse_config(args.config_path)
     #创建训练器

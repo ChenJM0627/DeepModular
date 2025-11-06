@@ -8,7 +8,9 @@ from .evaluator import register_confidence_evaluator,register_performance_evalua
 
 from loss.loss import *
 from models.classification.resnet import *
+from models.obj_detection.yolo.yolo import *
 from data_handlers.cls_data_handler import *
+from data_handlers.obj_data_handler import *
 from optimizers.opt import *
 from pre_processors.pre_processor import *
 from evaluators.cls_evaluator import *

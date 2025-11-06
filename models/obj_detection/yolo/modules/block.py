@@ -1,13 +1,8 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-"""Block modules."""
-
-from __future__ import annotations
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ultralytics.utils.torch_utils import fuse_conv_and_bn
+from utils.torch_utils import fuse_conv_and_bn
 
 from .conv import Conv, DWConv, GhostConv, LightConv, RepConv, autopad
 from .transformer import TransformerBlock
@@ -1531,30 +1526,6 @@ class C2PSA(nn.Module):
 
 
 class C2fPSA(C2f):
-    """
-    C2fPSA module with enhanced feature extraction using PSA blocks.
-
-    This class extends the C2f module by incorporating PSA blocks for improved attention mechanisms and feature extraction.
-
-    Attributes:
-        c (int): Number of hidden channels.
-        cv1 (Conv): 1x1 convolution layer to reduce the number of input channels to 2*c.
-        cv2 (Conv): 1x1 convolution layer to reduce the number of output channels to c.
-        m (nn.ModuleList): List of PSA blocks for feature extraction.
-
-    Methods:
-        forward: Performs a forward pass through the C2fPSA module.
-        forward_split: Performs a forward pass using split() instead of chunk().
-
-    Examples:
-        >>> import torch
-        >>> from ultralytics.models.common import C2fPSA
-        >>> model = C2fPSA(c1=64, c2=64, n=3, e=0.5)
-        >>> x = torch.randn(1, 64, 128, 128)
-        >>> output = model(x)
-        >>> print(output.shape)
-    """
-
     def __init__(self, c1: int, c2: int, n: int = 1, e: float = 0.5):
         """
         Initialize C2fPSA module.
@@ -1571,29 +1542,6 @@ class C2fPSA(C2f):
 
 
 class SCDown(nn.Module):
-    """
-    SCDown module for downsampling with separable convolutions.
-
-    This module performs downsampling using a combination of pointwise and depthwise convolutions, which helps in
-    efficiently reducing the spatial dimensions of the input tensor while maintaining the channel information.
-
-    Attributes:
-        cv1 (Conv): Pointwise convolution layer that reduces the number of channels.
-        cv2 (Conv): Depthwise convolution layer that performs spatial downsampling.
-
-    Methods:
-        forward: Applies the SCDown module to the input tensor.
-
-    Examples:
-        >>> import torch
-        >>> from ultralytics import SCDown
-        >>> model = SCDown(c1=64, c2=128, k=3, s=2)
-        >>> x = torch.randn(1, 64, 128, 128)
-        >>> y = model(x)
-        >>> print(y.shape)
-        torch.Size([1, 128, 64, 64])
-    """
-
     def __init__(self, c1: int, c2: int, k: int, s: int):
         """
         Initialize SCDown module.

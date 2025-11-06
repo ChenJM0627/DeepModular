@@ -1,10 +1,10 @@
 import cv2
 
-from .BaseData import BaseClsDataset,BaseDataHandler
+from .BaseData import BaseObjDataset,BaseDataHandler
 from core import register_data_handler
 
 
-class ClsDataset(BaseClsDataset):
+class ObjDataset(BaseObjDataset):
     def __init__(self,config,pre_processor):
         super().__init__(config,pre_processor)
 
@@ -12,28 +12,23 @@ class ClsDataset(BaseClsDataset):
         return len(self.im_files)
 
     def __getitem__(self, index):
-        img_path = self.im_files[index]
-        label = self.labels[index]
+        img_path = self.im_files[index]['image']
+        label_path = self.im_files[index]['label']
         img = self.read_img(img_path)
-        if self.img_sz is not None:
-            img = self.set_img_sz(img,self.img_sz)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = self.pre_processor.run(img)
 
         return img, label
 
 
-@register_data_handler('cls_data')
-class ClsDataHandler(BaseDataHandler):
+@register_data_handler('obj_data')
+class ObjDataHandler(BaseDataHandler):
     def __init__(self,config,pre_processor):
         super().__init__(config,pre_processor)
 
     def _gen_train_dataset(self):
-        return ClsDataset(self.config,self.pre_processor)
+        return ObjDataset(self.config,self.pre_processor)
 
     def _gen_val_dataset(self):
-        return ClsDataset(self.config,self.pre_processor)
-
-
-
-
+        return ObjDataset(self.config,self.pre_processor)
 
